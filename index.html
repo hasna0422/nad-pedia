@@ -1,0 +1,96 @@
+import pygame
+import sys
+
+# Inisialisasi Pygame
+pygame.init()
+
+# Ukuran Layar & Warna
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Simulasi Toko Sederhana")
+
+WHITE = (255, 255, 255)
+BLACK = (30, 30, 30)
+GREEN = (46, 204, 113)
+BLUE = (52, 152, 219)
+RED = (231, 76, 60)
+GRAY = (220, 220, 220)
+
+# Font
+font_title = pygame.font.SysFont("Arial", 32, bold=True)
+font_text = pygame.font.SysFont("Arial", 22)
+
+# Status Keuangan & Stok
+uang = 100000  # Modal awal (Rp)
+stok = 0
+harga_beli = 5000   # Harga beli dari supplier
+harga_jual = 8000   # Harga jual ke pelanggan
+
+# Tombol
+btn_beli = pygame.Rect(150, 400, 200, 60)
+btn_jual = pygame.Rect(450, 400, 200, 60)
+
+# Main Loop Game
+running = True
+pesan = "Selamat Datang di Toko Anda!"
+
+while running:
+    screen.fill(WHITE)
+    
+    # Event Handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+            
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos_tangan = event.pos
+            
+            # Logika Beli Stok
+            if btn_beli.collidepoint(pos_tangan):
+                if uang >= harga_beli:
+                    uang -= harga_beli
+                    stok += 1
+                    pesan = "Berhasil membeli 1 stok barang!"
+                else:
+                    pesan = "Uang tidak cukup untuk beli stok!"
+                    
+            # Logika Jual Barang
+            if btn_jual.collidepoint(pos_tangan):
+                if stok > 0:
+                    stok -= 1
+                    uang += harga_jual
+                    pesan = "Berhasil menjual 1 barang ke pelanggan!"
+                else:
+                    pesan = "Stok habis! Beli stok dulu."
+
+    # Render Teks Informasi
+    txt_judul = font_title.render("SIMULASI TOKO MANAJEMEN", True, BLACK)
+    txt_uang = font_text.render(f"Uang Kas: Rp {uang:,}", True, BLACK)
+    txt_stok = font_text.render(f"Jumlah Stok Barang: {stok} pcs", True, BLACK)
+    txt_harga_b = font_text.render(f"Harga Beli Stok: Rp {harga_beli}", True, RED)
+    txt_harga_j = font_text.render(f"Harga Jual Barang: Rp {harga_jual}", True, GREEN)
+    txt_pesan = font_text.render(f"Status: {pesan}", True, BLUE)
+    
+    # Tampilkan Teks di Layar
+    screen.blit(txt_judul, (200, 30))
+    screen.blit(txt_uang, (100, 120))
+    screen.blit(txt_stok, (100, 160))
+    screen.blit(txt_harga_b, (100, 220))
+    screen.blit(txt_harga_j, (100, 260))
+    screen.blit(txt_pesan, (100, 320))
+    
+    # Gambar Tombol
+    pygame.draw.rect(screen, RED, btn_beli, border_radius=10)
+    pygame.draw.rect(screen, GREEN, btn_jual, border_radius=10)
+    
+    # Teks Tombol
+    txt_btn_beli = font_text.render("BELI STOK (-Rp5rb)", True, WHITE)
+    txt_btn_jual = font_text.render("JUAL BARANG (+Rp8rb)", True, WHITE)
+    
+    screen.blit(txt_btn_beli, (btn_beli.x + 10, btn_beli.y + 18))
+    screen.blit(txt_btn_jual, (btn_jual.x + 5, btn_jual.y + 18))
+
+    pygame.display.flip()
+
+pygame.quit()
+sys.exit()
